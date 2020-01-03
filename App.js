@@ -16,11 +16,11 @@ mongoose.connect("mongodb://localhost:27017/thesisDB", {
 });
 
 //Schema für die Verbräuche erstellen.
-const verbrauchSchema = {
-    bezeichnung: String,
-    stueckzahl: Number,
-    monat: Number,
-    jahr: Number
+const consumptionSchema = {
+    name: String,
+    amount: Number,
+    month: Number,
+    year: Number
 };
 
 //Modell erstellen für die Einträge, als Vorlage wird das verbrauchSchema verwendet.
@@ -28,16 +28,16 @@ const verbrauchSchema = {
 //Modells heißt "document". Das erste Argument wird im Singular geschrieben, Mongooose
 //sucht dann automatisch nach der kleingeschriebenen Plural Version also ist "Consumption"
 //für die "consumptions" collection in der Datenbank.
-const Verbrauch = mongoose.model("Consumption", verbrauchSchema);
+const Consumption = mongoose.model("Consumption", consumptionSchema);
 
 // Chained app.route Methode von Express. Die ganzen Methoden werden durch einen . 
 // an app.route angehängt
-app.route("/verbrauch")
+app.route("/consumption")
     //*****************Anfragen die alle Einträge betreffen ********************/
     .get((req, res) => {
-        Verbrauch.find(function (err, gefundeneEintraege) {
+        Consumption.find(function (err, foundRecords) {
             if (!err) {
-                res.send(gefundeneEintraege);
+                res.send(foundRecords);
             } else {
                 res.send(err);
             }
@@ -45,16 +45,16 @@ app.route("/verbrauch")
     })
 
     .post((req, res) => {
-        const neuerVerbrauch = new Verbrauch({
-            bezeichnung: req.body.bezeichnung,
-            stueckzahl: req.body.stueckzahl,
-            monat: req.body.monat,
-            jahr: req.body.jahr
+        const newEntry = new Consumption({
+            name: req.body.name,
+            amount: req.body.amount,
+            month: req.body.month,
+            year: req.body.year
         });
         //Callback Funktion im Save antwortet dem Client mit Success/Error
-        neuerVerbrauch.save(function (err) {
+        newEntry.save(function (err) {
             if (!err) {
-                res.send("Der Eintrag wurde erfolgreich hinzugefügt");
+                res.send("Successfully added the record.");
             } else {
                 res.send(err);
             }
@@ -62,9 +62,9 @@ app.route("/verbrauch")
     })
 
     .delete((req, res) => {
-        Verbrauch.deleteMany(function (err) {
+        Consumption.deleteMany(function (err) {
             if (!err) {
-                res.send("Alle Einträge wurden erfolgreich gelöscht");
+                res.send("Successfully deleted all records.");
             } else {
                 res.send(err);
             }
@@ -72,35 +72,35 @@ app.route("/verbrauch")
     });
 
 //*****************Anfragen für spezifische Einträge ********************/
-app.route("/verbrauch/:parameterVariable")
+app.route("/consumption/:parameterVariable")
 
     .get((req, res) => {
-        Verbrauch.findOne({
-            bezeichnung: req.params.parameterVariable
-        }, (err, gefundeneEintraege) => {
-            if (gefundeneEintraege) {
-                res.send(gefundeneEintraege);
+        Consumption.findOne({
+            name: req.params.parameterVariable
+        }, (err, foundRecords) => {
+            if (foundRecords) {
+                res.send(foundRecords);
             } else {
-                res.send("Es wurden keine Maschinen mit dieser Bezeichnung gefunden");
+                res.send("No records found with that name.");
             }
         });
     })
 
     //Put ersetzt das komplette Document(Eintrag) durch ein neues Document
     .put((req, res) => {
-        Verbrauch.update({
-                bezeichnung: req.params.parameterVariable
+        Consumption.update({
+                name: req.params.parameterVariable
             }, {
-                bezeichnung: req.body.bezeichnung,
-                stueckzahl: req.body.stueckzahl,
-                monat: req.body.monat,
-                jahr: req.body.jahr,
+                name: req.body.name,
+                amount: req.body.amount,
+                month: req.body.month,
+                year: req.body.year,
             }, {
                 overwrite: true
             },
             err => {
                 if (!err) {
-                    res.send("Die Einträge wurden erfolgreich aktualisiert");
+                    res.send("Succesfully updated all records.");
                 }
             }
         );
@@ -109,14 +109,14 @@ app.route("/verbrauch/:parameterVariable")
     //Patch ersetzt nur einzelne Zeile des Documents(Eintrags)
     //Der Eintrag wird quasi gepatcht.
     .patch((req, res) => {
-        Verbrauch.update({
-                bezeichnung: req.params.parameterVariable
+        Consumption.update({
+                name: req.params.parameterVariable
             }, {
                 $set: req.body
             },
             err => {
                 if (!err) {
-                    res.send("Der Eintrag wurde erfolgreich aktualisiert")
+                    res.send("Succesfully updated the record.")
                 } else {
                     res.send(err);
                 }
@@ -125,19 +125,19 @@ app.route("/verbrauch/:parameterVariable")
     })
 
     .delete((req, res) => {
-        Verbrauch.deleteOne({
-                bezeichnung: req.params.parameterVariable
+        Consumption.deleteOne({
+                name: req.params.parameterVariable
             },
             err => {
                 if (!err) {
-                    res.send("Der Eintrag wurde erfolgreich gelöscht");
+                    res.send("Succesfully deleted the record.");
                 } else {
-                    res.send(err);
+                    res.send();
                 }
             }
         );
     });
 
 app.listen(3000, function () {
-    console.log("Server gestartet auf Port 3000");
+    console.log("Server started on port 3000");
 })
