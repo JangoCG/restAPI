@@ -8,7 +8,7 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(express.static("public"));
 
-//Für lokale DB.
+//Für lokale DB
 mongoose.connect("mongodb://localhost:27017/thesisDB", {
     //Um Warnmeldungen zu fixen.
     useNewUrlParser: true,
