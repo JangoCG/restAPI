@@ -105,3 +105,9 @@ dist
 
 # Stores VSCode versions used for testing VSCode extensions
 .vscode-test
+
+# HEROKU Stuff
+/node_modules
+npm-debug.log
+.DS_Store
+/*.env

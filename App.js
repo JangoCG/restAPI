@@ -8,12 +8,22 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(express.static("public"));
 
-//Verbindung zur DB aufbauen
-mongoose.connect("mongodb://localhost:27017/thesisDB", {
+//Für lokale DB
+// mongoose.connect("mongodb://localhost:27017/thesisDB", {
+//     //Um Warnmeldungen zu fixen.
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true
+// });
+
+//Für Online DB
+mongoose.connect("mongodb+srv://admin-cengiz:jangoadminasdf@cluster0-5vxjv.mongodb.net/thesisAPI", {
     //Um Warnmeldungen zu fixen.
     useNewUrlParser: true,
     useUnifiedTopology: true
 });
+
+
+
 
 //Schema für die Verbräuche erstellen.
 const consumptionSchema = {
@@ -138,6 +148,11 @@ app.route("/consumption/:parameterVariable")
         );
     });
 
-app.listen(3000, function () {
-    console.log("Server started on port 3000");
-})
+    let port = process.env.PORT;
+    if (port == null || port == "") {
+        port = 3000;
+    }
+    //  <---
+    app.listen(port, function () {
+        console.log("Server started on port 3000")
+    });
