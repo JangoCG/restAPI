@@ -15,7 +15,7 @@ mongoose.connect("mongodb://localhost:27017/thesisDB", {
     useUnifiedTopology: true
 });
 
-// //Für Online DB Verbindung
+// //Für Online DB Verbindung.
 // mongoose.connect("mongodb+srv://admin-cengiz:jangoadminasdf@cluster0-5vxjv.mongodb.net/thesisAPI", {
 //     //Um Warnmeldungen zu fixen.
 //     useNewUrlParser: true,
