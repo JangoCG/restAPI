@@ -9,18 +9,18 @@ app.use(bodyParser.urlencoded({
 app.use(express.static("public"));
 
 //Für lokale DB
-// mongoose.connect("mongodb://localhost:27017/thesisDB", {
-//     //Um Warnmeldungen zu fixen.
-//     useNewUrlParser: true,
-//     useUnifiedTopology: true
-// });
-
-//Für Online DB
-mongoose.connect("mongodb+srv://admin-cengiz:jangoadminasdf@cluster0-5vxjv.mongodb.net/thesisAPI", {
+mongoose.connect("mongodb://localhost:27017/thesisDB", {
     //Um Warnmeldungen zu fixen.
     useNewUrlParser: true,
     useUnifiedTopology: true
 });
+
+// //Für Online DB
+// mongoose.connect("mongodb+srv://admin-cengiz:jangoadminasdf@cluster0-5vxjv.mongodb.net/thesisAPI", {
+//     //Um Warnmeldungen zu fixen.
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true
+// });
 
 
 
