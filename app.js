@@ -1,6 +1,9 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require('mongoose');
+const admin = require('./config').admin
+const password = require('./config').password
+
 const app = express();
 
 app.use(bodyParser.urlencoded({
@@ -8,16 +11,14 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(express.static("public"));
 
-//Für lokale DB
+// for local connection
 // mongoose.connect("mongodb://localhost:27017/thesisDB", {
-//     //Um Warnmeldungen zu fixen.
 //     useNewUrlParser: true,
 //     useUnifiedTopology: true
 // });
 
-// //Für Online DB Verbindung.
-mongoose.connect("mongodb+srv://admin-cengiz:jangoadminasdf@cluster0-5vxjv.mongodb.net/thesisAPI", {
-    //Um Warnmeldungen zu fixen.
+// for online connection.
+mongoose.connect(`mongodb+srv://${admin}:${password}@cluster0-5vxjv.mongodb.net/thesisAPI`, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 });
@@ -25,7 +26,7 @@ mongoose.connect("mongodb+srv://admin-cengiz:jangoadminasdf@cluster0-5vxjv.mongo
 
 
 
-//Schema für die Verbräuche erstellen.
+// create db schema
 const consumptionSchema = {
     name: String,
     amount: Number,
@@ -33,17 +34,11 @@ const consumptionSchema = {
     year: Number
 };
 
-//Modell erstellen für die Einträge, als Vorlage wird das verbrauchSchema verwendet.
-//Modell ist ein constructor compiled aus der Schema definition. Eine Instanz eines
-//Modells heißt "document". Das erste Argument wird im Singular geschrieben, Mongooose
-//sucht dann automatisch nach der kleingeschriebenen Plural Version also ist "Consumption"
-//für die "consumptions" collection in der Datenbank.
+// create model
 const Consumption = mongoose.model("Consumption", consumptionSchema);
 
-// Chained app.route Methode von Express. Die ganzen Methoden werden durch einen . 
-// an app.route angehängt
 app.route("/consumption")
-    //*****************Anfragen die alle Einträge betreffen ********************/
+    // for general requests
     .get((req, res) => {
         Consumption.find(function (err, foundRecords) {
             if (!err) {
@@ -61,7 +56,6 @@ app.route("/consumption")
             month: req.body.month,
             year: req.body.year
         });
-        //Callback Funktion im Save antwortet dem Client mit Success/Error
         newEntry.save(function (err) {
             if (!err) {
                 res.send("Successfully added the record.");
@@ -81,7 +75,7 @@ app.route("/consumption")
         })
     });
 
-//*****************Anfragen für spezifische Einträge ********************/
+// for specific requests
 app.route("/consumption/:parameterVariable")
 
     .get((req, res) => {
@@ -96,18 +90,17 @@ app.route("/consumption/:parameterVariable")
         });
     })
 
-    //Put ersetzt das komplette Document(Eintrag) durch ein neues Document
     .put((req, res) => {
         Consumption.update({
-                name: req.params.parameterVariable
-            }, {
-                name: req.body.name,
-                amount: req.body.amount,
-                month: req.body.month,
-                year: req.body.year,
-            }, {
-                overwrite: true
-            },
+            name: req.params.parameterVariable
+        }, {
+            name: req.body.name,
+            amount: req.body.amount,
+            month: req.body.month,
+            year: req.body.year,
+        }, {
+            overwrite: true
+        },
             err => {
                 if (!err) {
                     res.send("Succesfully updated all records.");
@@ -116,14 +109,12 @@ app.route("/consumption/:parameterVariable")
         );
     })
 
-    //Patch ersetzt nur einzelne Zeile des Documents(Eintrags)
-    //Der Eintrag wird quasi gepatcht.
     .patch((req, res) => {
         Consumption.update({
-                name: req.params.parameterVariable
-            }, {
-                $set: req.body
-            },
+            name: req.params.parameterVariable
+        }, {
+            $set: req.body
+        },
             err => {
                 if (!err) {
                     res.send("Succesfully updated the record.")
@@ -136,8 +127,8 @@ app.route("/consumption/:parameterVariable")
 
     .delete((req, res) => {
         Consumption.deleteOne({
-                name: req.params.parameterVariable
-            },
+            name: req.params.parameterVariable
+        },
             err => {
                 if (!err) {
                     res.send("Succesfully deleted the record.");
@@ -148,11 +139,11 @@ app.route("/consumption/:parameterVariable")
         );
     });
 
-    let port = process.env.PORT;
-    if (port == null || port == "") {
-        port = 3000;
-    }
-    //  <---
-    app.listen(port, function () {
-        console.log("Server started on port 3000")
-    });
+let port = process.env.PORT;
+if (port == null || port == "") {
+    port = 3000;
+}
+
+app.listen(port, function () {
+    console.log("Server started on port 3000")
+});
